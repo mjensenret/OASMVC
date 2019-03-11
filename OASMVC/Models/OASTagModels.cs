@@ -1,0 +1,26 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace OASMVC.Models
+{
+    public class OASTagModels
+    {
+        public class OASNetworkNodes
+        {
+            public string NodeName { get; set; }
+        }
+
+        public class OASVersion
+        {
+            public int Version { get; set; }
+        }
+
+        public class TagList
+        {
+            public string TagName { get; set; }
+        }
+    }
+
+}

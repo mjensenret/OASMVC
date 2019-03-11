@@ -2,7 +2,50 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="dx-fieldset">
+    <div class="dx-field">
+        <div class="dx-field-label">
+            Network Node:
+        </div>
+        <div class="dx-field-value">
+            @(Html.DevExtreme().SelectBox()
+                .ID("networkNode")
+                .DataSource(d => d.Mvc().LoadAction("GetNetworkNodes").Controller("TagAPI").Key("NodeName"))
+                .DisplayExpr("NodeName")
+                .ValueExpr("NodeName")
+                .Value("Select Node")
+                .OnValueChanged("changeNode")
+            )
+        </div>
+    </div>
+    <div class="dx-field">
+        <div class="dx-field-label">
+            OAS Version:
+        </div>
+        <div class="dx-field-value">
+            @(Html.DevExtreme().TextBox()
+                .ID("txtVersion")
+                .ReadOnly(true)
+            )
+        </div>
+    </div>
+    <div class="dx-field">
+        <div class="dx-field-label">
+            Tags:
+        </div>
+        <div class="dx-field-value">
+            @(Html.DevExtreme().DataGrid<OASMVC.Models.OASTagModels.TagList>()
+                .ID("tagList")
+                .ShowBorders(true)
+                .Visible(false)
+                .RepaintChangesOnly(true)
+                .HighlightChanges(true)
+                .Columns(c =>
+                {
+                    c.AddFor(m => m.TagName).DataField("TagName");
+
+                })
+            )
+        </div>
+    </div>
 </div>
