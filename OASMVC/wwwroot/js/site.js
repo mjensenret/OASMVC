@@ -4,7 +4,7 @@
 // Write your JavaScript code.
 $(function () {
 
-    let connection = new signalR.HubConnectionBuilder()
+    var connection = new signalR.HubConnectionBuilder()
         .withUrl("/oasTagHub")
         .configureLogging(signalR.LogLevel.Information)
         .build();
@@ -14,13 +14,14 @@ $(function () {
         $("#txtVersion").dxTextBox("instance").option('value', version);
     });
 
-    connection.on("updateTagList", function (sendTags) {
-        window.console.log("tagList: " + sendTags);
+    connection.on("updateTagList", function (tagList) {
+        console.log(tagList);
         var store = new DevExpress.data.CustomStore({
+            key: "tagName",
             load: function () {
-                sendTags;
-            },
-            key: "TagName"
+
+                return tagList;
+            }
         });
         $("#tagList").dxDataGrid({
             dataSource: store,
@@ -34,7 +35,6 @@ $(function () {
 
 })
 
-
 function changeNode(data) {
     window.console.log("Data: " + data.value);
     $.ajax({
@@ -44,4 +44,6 @@ function changeNode(data) {
             window.console.log("success");
         }
     });
+
 }
+

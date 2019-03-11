@@ -10,6 +10,6 @@ namespace OASMVC.Repository
     {
         int GetOASVersion(string networkNode);
 
-        IEnumerable<TagList> GetTagList(string networkNode);
+        List<TagList> GetTagList(string networkNode);
     }
 }
