@@ -20,6 +20,8 @@ namespace OASMVC.Models
         public class TagList
         {
             public string TagName { get; set; }
+            public string Value { get; set; }
+            public DateTime TimeStamp { get; set; }
         }
     }
 

@@ -41,12 +41,17 @@ namespace OASMVC.Repository
         public List<TagList> GetTagList(string networkNode)
         {
             var tags = oasConfig.GetTagNames("", networkNode);
+            var tag2 = oasConfig.GetTagsAndParameters("",null,networkNode);
+
             var temp2 = oasConfig.GetGroupNames();
             Int32[] Errors = null;
+            string[] tag3 = new string[1];
+            tag3[0] = @"\\13-01-0110.ssc.savageservices.com\Ramp.Value";
 
-            
+            var values = oasData.SyncReadTags(tag3, ref Errors, 10000);
 
-            //var values = oasData.SyncReadTags(tempTag, ref Errors, 10000);
+            List<string> tagsList = new List<string>(tags);
+            List<object> valueList = new List<object>(values);
 
             List<TagList> tagList = new List<TagList>();
 
