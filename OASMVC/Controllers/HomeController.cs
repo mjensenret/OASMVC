@@ -35,7 +35,18 @@ namespace OASMVC.Controllers
         public IActionResult ChangeNetworkNode([FromRoute] string nodeName)
         {
             _oasRepository.GetOASVersion(nodeName);
-            _oasRepository.GetTagList(nodeName);
+            _oasRepository.GetTagList(nodeName, "");
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost("{groupName}/{nodeName}", Name ="ChangeGroup")]
+        public IActionResult ChangeGroup([FromRoute] string groupName, string nodeName)
+        {
+            if (groupName == "Root")
+                groupName = "";
+
+            _oasRepository.GetTagList(nodeName, groupName);
+            _oasRepository.GetTagsAndValues(nodeName, groupName);
             return RedirectToAction("Index");
         }
 

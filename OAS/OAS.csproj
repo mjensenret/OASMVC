@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="OASConfig">
+      <HintPath>..\..\..\..\Downloads\OASCore\OASConfig.dll</HintPath>
+    </Reference>
+    <Reference Include="OASData">
+      <HintPath>..\..\..\..\Downloads\OASCore\OASData.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

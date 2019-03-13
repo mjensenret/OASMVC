@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static OASMVC.Models.OASTagModels;
+using OAS;
+using System.Diagnostics;
 
 namespace OASMVC.Repository
 {
@@ -14,6 +16,12 @@ namespace OASMVC.Repository
     {
         public OASData.Data oasData = new OASData.Data();
         private OASConfig.Config oasConfig = new OASConfig.Config();
+        private Test oasTest = new Test();
+        internal static string NetworkNode; // Set by the user
+        internal static string NetworkPath; // Network path to include for remoting
+        internal static bool NetworkNodeChanged;
+
+
         // A Queue or Hashtable is recommended to receieve your values so they can be processed on a seperate thread.
         // You can also process data directly from the ValuesChangedAll Event, but keep in mind other values will be buffered until you release the Event.
         private Queue m_DataValuesQueue = new Queue(); // This Queue demonstrates a technique for processing a lot of data.
@@ -25,6 +33,7 @@ namespace OASMVC.Repository
         public OASRepository(IHubContext<OasTagHub> hubContext)
         {
             _hubContext = hubContext;
+            oasData.ValuesChangedAll += OasData_ValuesChangedAll;
             
         }
 
@@ -33,20 +42,18 @@ namespace OASMVC.Repository
             OASVersion version = new OASVersion();
             version.Version = oasConfig.GetVersion(networkNode);
 
-            _hubContext.Clients.All.SendAsync("displayVersion", version.Version);
+            GetOASGroups(networkNode);
+
+            _hubContext.Clients.All.SendAsync("displayVersion", version.Version, networkNode);
 
             return version.Version;
         }
 
-        public List<TagList> GetTagList(string networkNode)
+        public List<TagList> GetTagList(string networkNode, string groupName)
         {
-            var tags = oasConfig.GetTagNames("", networkNode);
-            var temp2 = oasConfig.GetGroupNames();
-            Int32[] Errors = null;
-
-            
-
-            //var values = oasData.SyncReadTags(tempTag, ref Errors, 10000);
+            var tags = oasConfig.GetTagNames(groupName, networkNode);
+            //Int32[] Errors = null;
+            //var values = oasData.SyncReadTags(tags, ref Errors, 10000);
 
             List<TagList> tagList = new List<TagList>();
 
@@ -60,12 +67,43 @@ namespace OASMVC.Repository
             return tagList;
         }
 
+        public List<TagList> GetTagsAndValues(string networkNode, string groupName)
+        {
+            var tags = oasConfig.GetTagNames(groupName, networkNode);
+
+            oasData.AddTags(tags);
+
+
+            return null;
+        }
+
+        public void GetOASGroups(string networkNode)
+        {
+            List<string> groups = new List<string>();
+            groups.Add("Root");
+
+            var returnedGroups = oasConfig.GetGroupNames("", networkNode);
+
+            foreach(var g in returnedGroups)
+            {
+                groups.Add(g);
+            }
+
+            _hubContext.Clients.All.SendAsync("populateGroups", groups);
+
+        }
+
         private void OasData_ValuesChangedAll(string[] Tags, object[] Values, bool[] Qualities, DateTime[] TimeStamps)
         {
             // High speed version with a lot of data values changing
             lock (m_DataValuesQueue.SyncRoot)
             {
                 m_DataValuesQueue.Enqueue(new ClassTagValues(Tags, Values, Qualities, TimeStamps));
+                foreach(var v in m_DataValuesQueue)
+                {
+                    Debug.WriteLine($"Count Enqueued: {m_DataValuesQueue.Count}");
+                }
+
             }
 
             // You can use the values directly here within the data event, but the example shown above with a Queue will work best with thousands of tags updating evey second.
@@ -97,6 +135,20 @@ namespace OASMVC.Repository
                 Values = NewValues;
                 Qualities = NewQualities;
                 TimeStamps = NewTimeStamps;
+            }
+        }
+
+        public static void SetNetworkNode(string NodeName)
+        {
+            NetworkNode = NodeName;
+            if (string.Compare(NetworkNode, "localhost", true) == 0 || string.IsNullOrEmpty(NetworkNode))
+            {
+                NetworkPath = "";
+            }
+            else
+            {
+                NetworkPath = "\\\\" + NetworkNode + "\\";
+                NetworkNodeChanged = true;
             }
         }
     }

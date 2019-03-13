@@ -21,6 +21,12 @@ namespace OASMVC.Models
         {
             public string TagName { get; set; }
         }
+
+        public class TagsAndValues
+        {
+            public string TagName { get; set; }
+            public string Value { get; set; }
+        }
     }
 
 }

@@ -9,8 +9,9 @@ $(function () {
         .configureLogging(signalR.LogLevel.Information)
         .build();
 
-    connection.on("displayVersion", function (version) {
+    connection.on("displayVersion", function (version, networkNode) {
         window.console.log("displayVersion: " + version);
+        window.console.log("networkNode: " + networkNode);
         $("#txtVersion").dxTextBox("instance").option('value', version);
     });
 
@@ -30,6 +31,13 @@ $(function () {
         //store.push([{ type: "update", key: data.tagName, data: data }]);
     });
 
+    connection.on("populateGroups", function (groups) {
+        console.log(groups);
+        var serverGroups = $("#serverGroups").dxSelectBox("instance");
+        serverGroups.option('visible', true);
+        serverGroups.option('dataSource', groups);
+    });
+
     connection.start();
     window.console.log("connection ran...");
 
@@ -45,5 +53,18 @@ function changeNode(data) {
         }
     });
 
+}
+
+function changeGroup(data) {
+    window.console.log("Group Data: " + data.value);
+    var networkNode = $("#networkNode").dxSelectBox("instance").option('value');
+    window.console.log(networkNode);
+    $.ajax({
+        type: "POST",
+        url: "/" + data.value + "/" + networkNode,
+        success: function () {
+            window.console.log("Changed group");
+        }
+    })
 }
 

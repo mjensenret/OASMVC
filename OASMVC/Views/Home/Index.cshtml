@@ -31,6 +31,18 @@
     </div>
     <div class="dx-field">
         <div class="dx-field-label">
+            Server Groups:
+        </div>
+        <div class="dx-field-value">
+            @(Html.DevExtreme().SelectBox()
+                .ID("serverGroups")
+                .Visible(false)
+                .OnValueChanged("changeGroup")
+            )
+        </div>
+    </div>
+    <div class="dx-field">
+        <div class="dx-field-label">
             Tags:
         </div>
         <div class="dx-field-value">

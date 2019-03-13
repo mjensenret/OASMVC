@@ -10,6 +10,12 @@ namespace OASMVC.Hubs
 {
     public class OasTagHub : Hub
     {
+        private OASData.Data oasData = new OASData.Data();
+
+        OasTagHub()
+        {
+
+        }
         private readonly IOASRepository oASRepository;
 
         //public IEnumerable<TagList> GetTags(string networkNode)
