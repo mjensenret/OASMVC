@@ -5,6 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.SignalR.Core">
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.signalr.core\1.1.0\lib\netstandard2.0\Microsoft.AspNetCore.SignalR.Core.dll</HintPath>
+    </Reference>
     <Reference Include="OASConfig">
       <HintPath>..\..\..\..\Downloads\OASCore\OASConfig.dll</HintPath>
     </Reference>

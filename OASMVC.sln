@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OASMVC", "OASMVC\OASMVC.csproj", "{8CC30E07-FDFD-4622-B45D-0501F008330E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAS", "OAS\OAS.csproj", "{B320215E-7CB5-4945-AB97-DF5FA710F73F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{8CC30E07-FDFD-4622-B45D-0501F008330E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CC30E07-FDFD-4622-B45D-0501F008330E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8CC30E07-FDFD-4622-B45D-0501F008330E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B320215E-7CB5-4945-AB97-DF5FA710F73F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B320215E-7CB5-4945-AB97-DF5FA710F73F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B320215E-7CB5-4945-AB97-DF5FA710F73F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B320215E-7CB5-4945-AB97-DF5FA710F73F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

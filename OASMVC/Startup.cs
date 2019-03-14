@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OASMVC.Hubs;
+using OASMVC.Infrastructure;
 using OASMVC.Repository;
 
 namespace OASMVC
@@ -34,6 +35,7 @@ namespace OASMVC
             });
 
             services.AddTransient<IOASRepository, OASRepository>();
+            services.AddTransient<IOpenAutomationSoftware, OpenAutomationSoftware>();
 
             services.AddSignalR();
 

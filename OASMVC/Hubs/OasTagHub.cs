@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using OASMVC.Infrastructure;
 using OASMVC.Repository;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using static OASMVC.Models.OASTagModels;
 
@@ -10,17 +14,16 @@ namespace OASMVC.Hubs
 {
     public class OasTagHub : Hub
     {
-        private OASData.Data oasData = new OASData.Data();
+        private IOpenAutomationSoftware _oas;
 
-        OasTagHub()
+        public OasTagHub(IOpenAutomationSoftware oas)
         {
-
+            _oas = oas;
         }
-        private readonly IOASRepository oASRepository;
 
-        //public IEnumerable<TagList> GetTags(string networkNode)
-        //{
-        //    return oASRepository.GetTagList(networkNode);
-        //}
+        public List<TagList> GetTagLists(string nodeName, string groupName)
+        {
+            return _oas.GetTagList(nodeName, groupName);
+        }
     }
 }

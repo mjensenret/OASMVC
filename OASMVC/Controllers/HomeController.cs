@@ -4,6 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using OASMVC.Hubs;
+using OASMVC.Infrastructure;
 using OASMVC.Models;
 using OASMVC.Repository;
 using static OASMVC.Models.OASTagModels;
@@ -14,11 +17,16 @@ namespace OASMVC.Controllers
     {
         private OASData.Data oasData = new OASData.Data();
         private OASConfig.Config oasConfig = new OASConfig.Config();
+        private IHubContext<OasTagHub> _oasHub;
         private IOASRepository _oasRepository;
+        private IOpenAutomationSoftware _oasComponent;
 
-        public HomeController(IOASRepository oasRepository)
+        public HomeController(IOASRepository oasRepository, IOpenAutomationSoftware oasComponents, IHubContext<OasTagHub> oasHub)
         {
+            _oasHub = oasHub;
             _oasRepository = oasRepository;
+            _oasComponent = oasComponents;
+
         }
 
         public IActionResult Index()
@@ -34,8 +42,7 @@ namespace OASMVC.Controllers
         [HttpPost("{nodeName}", Name ="ChangeNetworkNode")]
         public IActionResult ChangeNetworkNode([FromRoute] string nodeName)
         {
-            _oasRepository.GetOASVersion(nodeName);
-            _oasRepository.GetTagList(nodeName, "");
+            _oasComponent.GetOASVersion(nodeName);
             return RedirectToAction("Index");
         }
 
@@ -44,10 +51,11 @@ namespace OASMVC.Controllers
         {
             if (groupName == "Root")
                 groupName = "";
-
-            _oasRepository.GetTagList(nodeName, groupName);
-            _oasRepository.GetTagsAndValues(nodeName, groupName);
+            
+            _oasComponent.GetTagList(nodeName, groupName);
+            //_oasComponent.AddTags(groupName, nodeName);
             return RedirectToAction("Index");
+
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

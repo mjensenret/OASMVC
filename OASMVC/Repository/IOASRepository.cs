@@ -8,10 +8,6 @@ namespace OASMVC.Repository
 {
     public interface IOASRepository
     {
-        int GetOASVersion(string networkNode);
 
-        List<TagList> GetTagList(string networkNode, string groupName);
-
-        List<TagList> GetTagsAndValues(string networkNode, string groupName);
     }
 }
