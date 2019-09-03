@@ -18,9 +18,11 @@ namespace OASMVC.Infrastructure
 
         internal static string NetworkNode; // Set by the user
         internal static string NetworkPath; // Network path to include for remoting
+        internal static string CurrentGroup;
         internal static bool NetworkNodeChanged;
         internal static bool m_InProcessValues = false;
         internal static bool m_closing = false;
+        internal static string DataType = "Grid";
 
         // A Queue or Hashtable is recommended to receieve your values so they can be processed on a seperate thread.
         // You can also process data directly from the ValuesChangedAll Event, but keep in mind other values will be buffered until you release the Event.
@@ -68,21 +70,33 @@ namespace OASMVC.Infrastructure
 
         public List<TagList> GetTagList(string nodeName, string groupName)
         {
-            if (groupName == "Root")
+            RemoveAllTags();
+
+            var tagIdPrefix = "";
+            if (groupName == "Root" || groupName == "")
+            {
                 groupName = "";
+            }
+            else
+            {
+                tagIdPrefix = $"{NetworkPath + groupName}.";
+            }
+            CurrentGroup = groupName;    
 
             List<TagList> tagList = new List<TagList>();
 
             var tags = oasConfig.GetTagNames(groupName, NetworkNode);
 
+
             foreach(var i in tags)
             {
-                tagList.Add(new TagList { TagName = i });
+                tagList.Add(new TagList { TagId = tagIdPrefix + i + ".Value", TagName = i });
             }
 
             AddTags(groupName, NetworkNode);
 
             _hubContext.Clients.All.SendAsync("loadTags", tagList);
+            LoadChartData();
 
             return tagList;
             
@@ -93,12 +107,47 @@ namespace OASMVC.Infrastructure
         {
 
             var tags = oasConfig.GetTagNames(groupName, NetworkNode);
-            string[] values = tags
-                .Select(x => NetworkPath + x + ".Value")
-                .ToArray();
-
+            string[] values = new string[tags.Count()];
+            if(groupName == "")
+            {
+                values = tags
+                    .Select(x => x + ".Value")
+                    .ToArray();
+            }
+            else
+            {
+                values = tags
+                    .Select(x => NetworkPath + groupName + "." + x + ".Value")
+                    .ToArray();
+            }
 
             oasData.AddTags(values);
+
+        }
+
+        public void RemoveAllTags()
+        {
+            oasData.RemoveAllTags();
+        }
+
+        public List<ChartData> LoadChartData()
+        {
+            //RemoveAllTags();
+            //DataType = "Chart";
+            //oasData.AddTag("\\\\13-01-0110.ssc.savageservices.com\\Random.Value");
+
+            var chartData = new List<ChartData>();
+
+            chartData.Add(new ChartData { TagName = "Ramp", TimeStamp = DateTime.Now, Value = 0 });
+
+            _hubContext.Clients.All.SendAsync("loadChart", chartData);
+            return chartData;
+
+        }
+
+        public void Test()
+        {
+            _hubContext.Clients.All.SendAsync("showTextArea");
         }
 
         internal static void SetNetworkNodeName(string nodeName)
@@ -135,7 +184,6 @@ namespace OASMVC.Infrastructure
             {
                 if (m_DataValuesQueue.Count < 1)
                 {
-                    Debug.WriteLine("Nothing in queue");
                     m_InProcessValues = false;
                     return; // There is nothing to do
                 }
@@ -143,7 +191,6 @@ namespace OASMVC.Infrastructure
                 arrTagValues = new ClassTagValues[numberOfTagValues];
                 m_DataValuesQueue.CopyTo(arrTagValues, 0);
                 m_DataValuesQueue.Clear();
-                Debug.WriteLine("Queue cleared");
             }
 
             Int32 allTagValuesIndex = 0;
@@ -197,8 +244,17 @@ namespace OASMVC.Infrastructure
                         {
                             value = tagValues[tagIndex].ToString();
                         }
-
-                        _hubContext.Clients.All.SendAsync("updateTagValue", new TagList { TagName = tagNames[tagIndex].Substring(0,tagNames[tagIndex].IndexOf(".")), TimeStamp = tagTimeStamps[tagIndex], Value = value });
+                        if(DataType == "Grid")
+                        {
+                            _hubContext.Clients.All.SendAsync("updateTagValue", new TagList { TagId = tagNames[tagIndex], TagName = simplifyTagName(tagNames[tagIndex]), TimeStamp = tagTimeStamps[tagIndex], Value = value });
+                        }
+                        if(tagNames[tagIndex] == "Random.Value")
+                        {
+                            _hubContext.Clients.All.SendAsync("insertChartData", new ChartData { TagName = tagNames[tagIndex].Substring(0, tagNames[tagIndex].IndexOf(".")), TimeStamp = tagTimeStamps[tagIndex], Value = Convert.ToDouble(value) });
+                            _hubContext.Clients.All.SendAsync("updateGaugeValue", Convert.ToDouble(value));
+                        }
+                        
+                        
                     }
                 }
 
@@ -275,7 +331,7 @@ namespace OASMVC.Infrastructure
 
                             //_hubContext.Clients.All.SendAsync("updateTagValues", tagListModel);
 
-                            Debug.WriteLine(UpdateString.ToString());
+                            //Debug.WriteLine(UpdateString.ToString());
                             UpdateString.Remove(0, UpdateString.Length);
                         }
                         catch (Exception ex)
@@ -305,6 +361,13 @@ namespace OASMVC.Infrastructure
             }
         }
 
+        private string simplifyTagName(string fullName)
+        {
+            var simpleTagName = fullName.Replace(NetworkPath+CurrentGroup+".", "");
+            simpleTagName = simpleTagName.Replace(".Value", "");
+            return simpleTagName;
+        }
+
         private void OasData_ValuesChangedAll(string[] Tags, object[] Values, bool[] Qualities, DateTime[] TimeStamps)
         {
             // High speed version with a lot of data values changing
@@ -312,7 +375,6 @@ namespace OASMVC.Infrastructure
             {
                 m_DataValuesQueue.Enqueue(new ClassTagValues(Tags, Values, Qualities, TimeStamps));
             }
-            Debug.WriteLine($"Queue count: {m_DataValuesQueue.Count}");
         }
     }
 }

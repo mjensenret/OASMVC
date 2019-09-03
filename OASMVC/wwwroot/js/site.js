@@ -11,6 +11,7 @@ var connection = new signalR.HubConnectionBuilder()
 $(function () {
 
     var store;
+    var store2;
 
     connection.on("displayVersion", function (version, networkNode) {
         $("#txtVersion").dxTextBox("instance").option('value', version);
@@ -18,27 +19,21 @@ $(function () {
 
     connection.on("loadTags", function (tagList) {
         store = new DevExpress.data.CustomStore({
-            key: "tagName",
+            key: "tagId",
             load: function () {
 
                 return tagList;
             }
         });
-        window.console.log(store);
         $("#tagList").dxDataGrid({
             dataSource: store,
             visible: true
         });
     });
+
     connection.on("updateTagValue", function (tagList) {
-        window.console.log("in update tag values...")
-        store.push([{ type: "update", key: tagList.tagName, data: tagList }]);
+        store.push([{ type: "update", key: tagList.tagId, data: tagList }]);
     });
-    //connection.on("updateTagValues", function (tagListModel) {
-    //    var store = $("#tagList").dxDataGrid("getDataSource").store();
-    //    store.push([{ type: "update", key: tagListModel.tagName, data: tagListModel }]);
-    //    window.console.log(test);
-    //})
 
     connection.on("populateGroups", function (groups) {
         var serverGroups = $("#serverGroups").dxSelectBox("instance");
@@ -46,7 +41,32 @@ $(function () {
         serverGroups.option('dataSource', groups);
     });
 
-    connection.start();
+    connection.on("loadChart", function (chartData) {
+        window.console.log("inside loadchart....");
+        store2 = new DevExpress.data.CustomStore({
+            load: function () {
+                return chartData;
+            },
+            key: "timeStamp"
+        });
+        $("#testChart").dxChart({
+            dataSource: store2
+        });
+    });
+
+    connection.on("insertChartData", function (data) {
+        window.console.log("Made it in the insertChartData function");
+        window.console.log("Store in insertChartData: " + store);
+        store2.push([{ type: "insert", key: data.timeStamp, data: data }]);
+    });
+
+    connection.on("updateGaugeValue", function (value) {
+        $("#testGauge").dxCircularGauge("instance").option("value", value);
+    });
+
+    connection.start().catch(function (err) {
+        return console.error(err.toString());
+    });
 
 });
 
@@ -78,7 +98,25 @@ function changeGroup(data) {
 
         }
     })
+}
 
-    };
+function OnChartLoad() {
+    $.ajax({
+        type: "POST",
+        url: "/LoadChart",
+        success: function () {
 
+        }
+    })
+}
+
+function TestFunction() {
+    $.ajax({
+        type: "POST",
+        url: "/Test",
+        success: function () {
+
+        }
+    })
+}
 

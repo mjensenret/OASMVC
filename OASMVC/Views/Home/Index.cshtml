@@ -54,6 +54,7 @@
                 .HighlightChanges(true)
                 .Columns(c =>
                 {
+                    c.AddFor(m => m.TagId).DataField("tagId").Visible(false);
                     c.AddFor(m => m.TagName).DataField("tagName");
                     c.AddFor(m => m.TimeStamp).DataField("timeStamp").Format(Format.LongTime);
                     c.AddFor(m => m.Value).DataField("value");
@@ -61,5 +62,35 @@
                 })
             )
         </div>
+    </div>
+    <div>
+        @(Html.DevExtreme().Chart()
+                .ID("testChart")
+                .Title("Amp Values")
+                .CommonSeriesSettings(s => s
+                    .ArgumentField("timeStamp")
+                    .Type(SeriesType.Spline)
+                )
+                .Series(s =>
+                {
+                    s.Add().ValueField("value").Name("Value");
+                })
+                .ArgumentAxis(a =>
+                {
+                    a.ArgumentType(ChartDataType.DateTime)
+                    .ValueMarginsEnabled(false)
+                    .VisualRange(v => v.Length(VizTimeInterval.Hour));
+                })
+                .ValueAxis(v => v.Add().PlaceholderSize(50))
+                .ScrollBar(s => s.Visible(true))
+                .ZoomAndPan(z => z.ArgumentAxis(ChartZoomAndPanMode.Both))
+        )
+    </div>
+    <div>
+        @(Html.DevExtreme().CircularGauge()
+            .ID("testGauge")
+            .Title("Gauge Test")
+            .Value(0)
+        )
     </div>
 </div>

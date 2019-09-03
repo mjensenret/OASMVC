@@ -19,6 +19,7 @@ namespace OASMVC.Models
 
         public class TagList
         {
+            public string TagId { get; set; }
             public string TagName { get; set; }
             public string Value { get; set; }
             public DateTime TimeStamp { get; set; }
@@ -28,6 +29,13 @@ namespace OASMVC.Models
         {
             public string TagName { get; set; }
             public string Value { get; set; }
+        }
+
+        public class ChartData
+        {
+            public string TagName { get; set; }
+            public DateTime TimeStamp { get; set; }
+            public double Value { get; set; }
         }
     }
 

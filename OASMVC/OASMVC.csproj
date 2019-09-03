@@ -21,4 +21,5 @@
       <HintPath>..\..\..\..\Downloads\OASCore\OASData.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ProjectExtensions><VisualStudio><UserProperties DismissedDevExtremeVersion="18.2.7" /></VisualStudio></ProjectExtensions>
 </Project>

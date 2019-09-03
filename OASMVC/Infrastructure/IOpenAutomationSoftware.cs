@@ -11,5 +11,7 @@ namespace OASMVC.Infrastructure
         void GetOASVersion(string networkNode);
         List<TagList> GetTagList(string nodeName, string groupName);
         void AddTags(string nodeName, string groupName);
+        void RemoveAllTags();
+        List<ChartData> LoadChartData();
     }
 }

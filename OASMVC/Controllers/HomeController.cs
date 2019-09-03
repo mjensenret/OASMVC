@@ -39,6 +39,11 @@ namespace OASMVC.Controllers
             return View();
         }
 
+        public IActionResult ChartTest()
+        {
+            return View();
+        }
+
         [HttpPost("{nodeName}", Name ="ChangeNetworkNode")]
         public IActionResult ChangeNetworkNode([FromRoute] string nodeName)
         {
@@ -53,9 +58,18 @@ namespace OASMVC.Controllers
                 groupName = "";
             
             _oasComponent.GetTagList(nodeName, groupName);
+            _oasComponent.LoadChartData();
             //_oasComponent.AddTags(groupName, nodeName);
             return RedirectToAction("Index");
 
+        }
+
+        [HttpPost("LoadChart", Name ="LoadChartData")]
+        public IActionResult LoadChart()
+        {
+            
+
+            return RedirectToAction("ChartTest");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
